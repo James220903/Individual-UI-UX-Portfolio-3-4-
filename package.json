@@ -1,0 +1,15 @@
+{
+  "name": "individual-ui-ux-portfolio-3-4-",
+  "version": "1.0.0",
+  "description": "This repository contains the front-end implementation of a responsive and accessible web user interface. It's designed to showcase specific user interaction sequences and to demonstrate a seamless user experience across various devices.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
