@@ -5,8 +5,8 @@ const MongoDBSession = require('connect-mongodb-session')(session);
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const path = require('path');
-const username = 'jamesthorley291';
-const password = encodeURIComponent('iMiiCas150Penena');
+const username = 'jamesthorley1';
+const password = encodeURIComponent('UUWwZxL9Wdm2VHnk');
 
 // Models
 const Meeting = require('./models/Meeting');
@@ -19,7 +19,7 @@ const Student = require('./models/Student');
 
 
 
-const mongoUri = `mongodb+srv://${username}:${password}@cluster0.qvjhqe8.mongodb.net/`;
+const mongoUri = `mongodb+srv://${username}:${password}@cluster0.qvjhqe8.mongodb.net/myapp`;
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -149,6 +149,6 @@ app.get('/seniorTutorDashboard', isAuth, (req, res) => {
 
 
 // Start the server
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

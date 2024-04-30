@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const relationshipSchema = new Schema({
     studentId: { type: Schema.Types.ObjectId, ref: 'Student' },
