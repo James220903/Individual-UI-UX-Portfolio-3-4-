@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <link rel="stylesheet" href="/css/studentDashboard.css">
+    <link rel="stylesheet" href="/public/css/studentDashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -12,15 +12,11 @@
         <div class="sidebar">
             <h1><i class="fas fa-user-graduate"></i> Student</h1>
             <ul>
-                <li><a href="#"><i class="fas fa-file-alt"></i> View Self Report</a></li>
-
-                <li><a href="#"><i class="fas fa-calendar-alt"></i> Meetings</a></li>
-
-                <li><a href="#"><i class="fas fa-edit"></i> Create Self Report</a></li>
-
-                <li><a href="#"><i class="fas fa-calendar-check"></i> View Scheduled Meetings</a></li>
-                
-                <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                <li id="viewSelfReport"><a href="#"><i class="fas fa-file-alt"></i> View Self Report</a></li>
+                <li id="viewMeetings"><a href="#"><i class="fas fa-calendar-alt"></i> Meetings</a></li>
+                <li id="createSelfReport"><a href="#"><i class="fas fa-edit"></i> Create Self Report</a></li>
+                <li id="viewScheduledMeetings"><a href="#"><i class="fas fa-calendar-check"></i> View Scheduled Meetings</a></li>
+                <li id="logout"><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
         <div class="content">
@@ -28,5 +24,31 @@
             <p>Please select an option from the sidebar.</p>
         </div>
     </div>
+    <script>
+        document.getElementById('viewSelfReport').addEventListener('click', function(event) {
+            event.preventDefault();
+            fetch('/reports/self')
+            .then(response => response.json())
+            .then(data => {
+                const contentArea = document.querySelector('.content');
+                contentArea.innerHTML = '<h2>Self Reports</h2>';
+                data.reports.forEach(report => {
+                    contentArea.innerHTML += `<p>${report.content}</p>`;
+                });
+            })
+            .catch(error => console.error('Error fetching reports:', error));
+        });
+
+        document.getElementById('logout').addEventListener('click', function(event) {
+            event.preventDefault();
+            fetch('/logout', { method: 'POST' })
+            .then(() => {
+                window.location.href = '/login';
+            })
+            .catch(error => console.error('Error logging out:', error));
+        });
+
+        // Add more listeners for other actions like Meetings, Create Self Report, etc.
+    </script>
 </body>
 </html>

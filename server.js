@@ -5,8 +5,8 @@ const MongoDBSession = require('connect-mongodb-session')(session);
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const path = require('path');
-const username = 'jamesthorley1';
-const password = encodeURIComponent('UUWwZxL9Wdm2VHnk');
+const username = 'jamesthorley291';
+const password = encodeURIComponent('iMiiCas150Penena');
 
 // Models
 const Meeting = require('./models/Meeting');
@@ -19,7 +19,7 @@ const Student = require('./models/Student');
 
 
 
-const mongoUri = `mongodb+srv://${username}:${password}@cluster0.qvjhqe8.mongodb.net/myapp`;
+const mongoUri = `mongodb+srv://${username}:${password}@cluster0.jxgtgxt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -119,6 +119,18 @@ app.post('/logout', (req, res) => {
     }
   });
 });
+
+app.get('/reports/self', async (req, res) => {
+  try {
+      const userId = req.session.userId; // Assuming you store user ID in session
+      const reports = await SelfReport.find({ studentId: userId }); // Assuming you have a SelfReport model
+      res.json({ reports });
+  } catch (error) {
+      console.error('Failed to fetch reports:', error);
+      res.status(500).send('Error fetching reports');
+  }
+});
+
 
 // Serve HTML files
 app.get('/studentDashboard', isAuth, (req, res) => {
