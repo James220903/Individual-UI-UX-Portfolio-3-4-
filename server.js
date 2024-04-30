@@ -163,21 +163,21 @@ app.post('/reports/create', isAuth , async (req, res) => {
   }
 });
 
-app.get('/reports/self', isAuth, async (req, res) => {
+app.get('/reports/self', async (req, res) => {
   try {
-      // Assuming the studentId is stored in the session when logged in
-      const studentId = req.session.userId;
+      const studentId = req.session.userId;  // Make sure this is correctly set
+      console.log("Fetching reports for student ID:", studentId);  // Debugging output
 
-      // Fetch all self reports for the logged-in student
-      const reports = await SelfReport.find({ studentId: studentId });
+      const reports = await SelfReport.find({ studentId: studentId }).exec();  // Ensure proper execution
+      console.log("Reports found:", reports);  // Debugging output
 
-      // Send the reports back to the client
-      res.json({ reports });
+      res.json({ reports });  // Send the reports back to the client
   } catch (error) {
       console.error('Error fetching self reports:', error);
       res.status(500).send('Failed to retrieve self reports.');
   }
 });
+
 
 
 // Serve HTML files
