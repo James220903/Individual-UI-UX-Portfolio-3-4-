@@ -1,83 +1,92 @@
 const express = require('express');
-const session = require('express-session');
-const path = require('path');
 const app = express();
+const session = require('express-session');
+const MongoDBSession = require('connect-mongodb-session')(session);
+const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
+const path = require('path');
+const username = 'jamesthorley291';
+const password = encodeURIComponent('iMiiCas150Penena');
 
+// Models
+const User = require('./models/User');
+const Book = require('./models/Book');
+const Message = require('./models/Message');
+
+const mongoUri = `mongodb+srv://${username}:${password}@cluster0.qvjhqe8.mongodb.net/`;
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static('public'));
+// Connect to MongoDB
+mongoose.connect(mongoUri)
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+  });
 
-// Use express-session
+const store = new MongoDBSession({
+  uri: mongoUri,
+  collection: 'mySessions',
+});
+
 app.use(session({
-    secret: 'your_secret_key', // Change to a secret key of your choice
-    resave: false,
-    saveUninitialized: true
+  secret: 'key that will sign cookie',
+  resave: false,
+  saveUninitialized: false,
+  store: store,
 }));
 
-// Dummy user for demonstration purposes
-// Dummy users for demonstration purposes
-const DUMMY_USERS = [
-    { username: 'student', password: 'pass', role: 'Student' },
-    { username: 'personal_supervisor', password: 'pass', role: 'PS' },
-    { username: 'senior_tutor', password: 'pass', role: 'ST' }
-];
+const isAuth = (req, res, next) => {
+  if (req.session.isAuth) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+};
 
-
-// Body parser to parse form data
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Route for serving the login page
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+// User login
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email: email.trim() });
+  if (!user) {
+    return res.redirect('/login');
+  }
+  const isMatch = await bcrypt.compare(password.trim(), user.password);
+  if (!isMatch) {
+    return res.redirect("/login");
+  }
+  req.session.isAuth = true;
+  req.session.userId = user._id;
+  res.redirect('/home');
 });
 
-// Route for handling the login
-// Route for handling the login
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-
-    // Check for user in dummy users array
-    const user = DUMMY_USERS.find(u => u.username === username && u.password === password);
-
-    if (user) {
-        // Set user information and role in session
-        req.session.user = { username: user.username, role: user.role };
-        res.redirect('/dashboard'); // Redirect to the dashboard or another secure page
+// User logout
+app.post('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Could not log out, please try again.');
     } else {
-        res.send('Invalid credentials');
+      res.clearCookie('connect.sid');
+      res.redirect('/login');
     }
+  });
 });
 
-app.get('/dashboard', (req, res) => {
-    if (req.session.user) {
-        switch (req.session.user.role) {
-            case 'Student':
-                res.send('Welcome to the Student dashboard, ' + req.session.user.username + '!');
-                break;
-            case 'PS':
-                res.send('Welcome to the Personal Supervisor dashboard, ' + req.session.user.username + '!');
-                break;
-            case 'ST':
-                res.send('Welcome to the Senior Tutor dashboard, ' + req.session.user.username + '!');
-                break;
-            default:
-                res.send('Unauthorized role');
-                break;
-        }
-    } else {
-        res.redirect('/login');
-    }
-});
+// Serve HTML files
 
-// Route for secure page
-app.get('/secure-page', (req, res) => {
-    if (req.session.user) {
-        res.send('Welcome to the secure page, ' + req.session.user + '!');
-    } else {
-        res.redirect('/login');
-    }
-});
 
-app.listen(PORT, () => {
-    console.log(`Server is running on: http://localhost:${PORT}`);
+
+// Start the server
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

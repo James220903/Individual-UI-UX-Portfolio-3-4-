@@ -1,0 +1,77 @@
+body, h1, h2, ul, li, a, p {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-color: #f4f4f4; /* Light grey background */
+}
+
+.dashboard {
+    display: flex;
+    width: 80%; /* Dashboard width */
+    height: 80%; /* Dashboard height */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow for 3D effect */
+}
+
+.sidebar {
+    background-color: #333;
+    color: #fff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 15px 0 0 15px; /* Rounded corners on the left side */
+}
+
+.sidebar h1 {
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    width: 100%;
+    list-style-type: none;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    padding: 10px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #555;
+}
+
+.content {
+    flex: 3;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 0 15px 15px 0; /* Rounded corners on the right side */
+    overflow-y: auto;
+    display: flex;            /* Enables flexbox */
+    flex-direction: column;   /* Stacks children vertically */
+    justify-content: center;  /* Centers children vertically */
+    align-items: center;      /* Centers children horizontally */
+    height: 100%;             /* Full height to fill the parent container */
+}
+
+.content h2 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.content p {
+    color: #666;
+    font-size: 16px;
+}
