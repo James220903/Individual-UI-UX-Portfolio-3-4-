@@ -70,11 +70,34 @@
             });
         });
 
-        document.getElementById('createSelfReport').addEventListener('click', function(event) {
-            event.preventDefault();
-            hideAllSections();
-            createReportForm.style.display = 'block'; // Show the form to create reports
+        document.getElementById('newReportForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission behavior
+        const reportContent = document.getElementById('reportContent').value;
+
+        fetch('/reports/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ reportContent: reportContent })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Report created successfully!');
+                // Optionally clear the form or update the UI
+                document.getElementById('reportContent').value = '';
+            } else {
+                alert('Failed to create report: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error creating report:', error);
+            alert('Error creating report.');
         });
+    });
+
+    // Logout
 
         document.getElementById('logout').addEventListener('click', function(event) {
             event.preventDefault();
