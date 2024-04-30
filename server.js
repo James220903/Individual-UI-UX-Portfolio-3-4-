@@ -128,34 +128,54 @@ app.post('/logout', (req, res) => {
   });
 });
 
-app.get('/reports/self', async (req, res) => {
+app.post('/reports/create', isAuth , async (req, res) => {
+  // Check for authentication first
+  if (!req.session.isAuth) {
+      return res.status(401).send('Unauthorized: No access to create reports.');
+  }
+
+  // Extract data from the request body
+  const { reportContent, reportDate = new Date() } = req.body;
+
+  // Retrieve the studentId from session (assuming you store this upon login)
+  const studentId = req.session.userId;  // Adjust based on your session setup
+
+  if (!reportContent) {
+      return res.status(400).send('Report content is required.');
+  }
+
   try {
-      const userId = req.session.userId; // Assuming you store user ID in session
-      const reports = await SelfReport.find({ studentId: userId }); // Assuming you have a SelfReport model
-      res.json({ reports });
+      // Create a new self report using the SelfReport model
+      const newSelfReport = new SelfReport({
+          studentId: studentId,
+          reportContent: reportContent,
+          reportDate: reportDate
+      });
+
+      // Save the new self report to the database
+      await newSelfReport.save();
+
+      // Send a success response back to the client
+      res.status(201).send({ message: 'Self report created successfully', reportId: newSelfReport._id });
   } catch (error) {
-      console.error('Failed to fetch reports:', error);
-      res.status(500).send('Error fetching reports');
+      console.error('Failed to create self report:', error);
+      res.status(500).send('Error creating self report');
   }
 });
 
-app.post('/reports/create', isAuth , async (req, res) => {
-  if (!req.session.isAuth) {
-      return res.status(401).send('You must be logged in to create reports');
-  }
-
+app.get('/reports/self', isAuth, async (req, res) => {
   try {
-      const { content } = req.body;
-      const newReport = new SelfReport({
-          studentId: req.session.userId, // Assuming you store userId in session when logging in
-          content: content
-      });
+      // Assuming the studentId is stored in the session when logged in
+      const studentId = req.session.userId;
 
-      await newReport.save();
-      res.send({ message: 'Report created successfully', reportId: newReport._id });
+      // Fetch all self reports for the logged-in student
+      const reports = await SelfReport.find({ studentId: studentId });
+
+      // Send the reports back to the client
+      res.json({ reports });
   } catch (error) {
-      console.error('Failed to create report:', error);
-      res.status(500).send('Error creating report');
+      console.error('Error fetching self reports:', error);
+      res.status(500).send('Failed to retrieve self reports.');
   }
 });
 

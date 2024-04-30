@@ -22,21 +22,76 @@
         <div class="content">
             <h2>Welcome to Your Dashboard</h2>
             <p>Please select an option from the sidebar.</p>
+            <!-- Container for displaying self reports -->
+            <div id="selfReportsContainer" style="display:none;">
+                <h3>Self Reports</h3>
+                <ul id="selfReportsList"></ul>
+            </div>
+            <!-- Form for creating a new self report -->
+            <div id="createReportForm" style="display:none;">
+                <h3>Create a New Self Report</h3>
+                <form id="newReportForm">
+                    <textarea id="reportContent" name="reportContent" placeholder="Enter your report details here..." required></textarea>
+                    <button type="submit">Submit Report</button>
+                </form>
+            </div>
         </div>
     </div>
     <script>
         document.getElementById('viewSelfReport').addEventListener('click', function(event) {
             event.preventDefault();
+            const reportsContainer = document.getElementById('selfReportsContainer');
+            const reportsList = document.getElementById('selfReportsList');
+            reportsList.innerHTML = '';  // Clear previous content
+
             fetch('/reports/self')
             .then(response => response.json())
             .then(data => {
-                const contentArea = document.querySelector('.content');
-                contentArea.innerHTML = '<h2>Self Reports</h2>';
-                data.reports.forEach(report => {
-                    contentArea.innerHTML += `<p>${report.content}</p>`;
-                });
+                if (data.reports.length > 0) {
+                    data.reports.forEach(report => {
+                        const li = document.createElement('li');
+                        li.textContent = report.content;  // Assuming 'content' is part of your report model
+                        reportsList.appendChild(li);
+                    });
+                } else {
+                    reportsList.innerHTML = '<li>No reports found.</li>';
+                }
+                reportsContainer.style.display = 'block';  // Show the reports container
             })
-            .catch(error => console.error('Error fetching reports:', error));
+            .catch(error => {
+                console.error('Error fetching reports:', error);
+                reportsList.innerHTML = '<li>Error loading reports.</li>';
+            });
+        });
+
+        document.getElementById('createSelfReport').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('createReportForm').style.display = 'block'; // Show the form
+        });
+
+        document.getElementById('newReportForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const reportContent = document.getElementById('reportContent').value;
+
+            fetch('/reports/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reportContent: reportContent
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Report created successfully!');
+                document.getElementById('reportContent').value = ''; // Clear the textarea
+                document.getElementById('createReportForm').style.display = 'none'; // Hide the form
+            })
+            .catch(error => {
+                console.error('Error creating report:', error);
+                alert('Failed to create report');
+            });
         });
 
         document.getElementById('logout').addEventListener('click', function(event) {
@@ -47,36 +102,7 @@
             })
             .catch(error => console.error('Error logging out:', error));
         });
-        document.getElementById('createSelfReport').addEventListener('click', function(event) {
-        event.preventDefault();
-        document.getElementById('createReportForm').style.display = 'block';
-    });
-
-    document.getElementById('newSelfReport').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const reportContent = document.getElementById('reportContent').value;
-
-        fetch('/reports/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content: reportContent })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Report created:', data);
-            document.getElementById('createReportForm').style.display = 'none';
-            document.getElementById('reportContent').value = ''; // Clear form
-            alert('Report successfully created!');
-        })
-        .catch(error => {
-            console.error('Error creating report:', error);
-            alert('Failed to create report');
-        });
-    });
-
-        // Add more listeners for other actions like Meetings, Create Self Report, etc.
     </script>
 </body>
 </html>
+
