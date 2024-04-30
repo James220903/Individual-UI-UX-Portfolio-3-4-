@@ -158,7 +158,7 @@ app.get('/seniorTutorDashboard', isAuth, (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+  res.sendFile(path.join(__dirname, 'public' , 'views', 'login.html'));
 });
 
 
