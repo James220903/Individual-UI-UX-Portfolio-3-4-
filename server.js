@@ -135,7 +135,7 @@ app.get('/reports/self', async (req, res) => {
 // Serve HTML files
 app.get('/studentDashboard', isAuth, (req, res) => {
   if (req.session.userType === 'student') {
-    res.sendFile(path.join(__dirname, 'views', 'studentDashboard.html'));
+    res.sendFile(path.join(__dirname, 'public' ,'studentDashboard.html'));
   } else {
     res.status(403).send("Access Denied");
   }
