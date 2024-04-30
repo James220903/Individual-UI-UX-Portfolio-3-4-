@@ -2,12 +2,13 @@
   "name": "individual-ui-ux-portfolio-3-4-",
   "version": "1.0.0",
   "description": "This repository contains the front-end implementation of a responsive and accessible web user interface. It's designed to showcase specific user interaction sequences and to demonstrate a seamless user experience across various devices.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["ui", "ux", "responsive", "web", "portfolio"],
+  "author": "Your Name",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
