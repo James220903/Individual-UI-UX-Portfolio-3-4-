@@ -47,6 +47,34 @@
             })
             .catch(error => console.error('Error logging out:', error));
         });
+        document.getElementById('createSelfReport').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('createReportForm').style.display = 'block';
+    });
+
+    document.getElementById('newSelfReport').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const reportContent = document.getElementById('reportContent').value;
+
+        fetch('/reports/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: reportContent })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Report created:', data);
+            document.getElementById('createReportForm').style.display = 'none';
+            document.getElementById('reportContent').value = ''; // Clear form
+            alert('Report successfully created!');
+        })
+        .catch(error => {
+            console.error('Error creating report:', error);
+            alert('Failed to create report');
+        });
+    });
 
         // Add more listeners for other actions like Meetings, Create Self Report, etc.
     </script>

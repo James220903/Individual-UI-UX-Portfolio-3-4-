@@ -139,6 +139,26 @@ app.get('/reports/self', async (req, res) => {
   }
 });
 
+app.post('/reports/create', isAuth , async (req, res) => {
+  if (!req.session.isAuth) {
+      return res.status(401).send('You must be logged in to create reports');
+  }
+
+  try {
+      const { content } = req.body;
+      const newReport = new SelfReport({
+          studentId: req.session.userId, // Assuming you store userId in session when logging in
+          content: content
+      });
+
+      await newReport.save();
+      res.send({ message: 'Report created successfully', reportId: newReport._id });
+  } catch (error) {
+      console.error('Failed to create report:', error);
+      res.status(500).send('Error creating report');
+  }
+});
+
 
 // Serve HTML files
 app.get('/studentDashboard', isAuth, (req, res) => {
