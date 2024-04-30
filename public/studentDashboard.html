@@ -22,12 +22,11 @@
         <div class="content">
             <h2>Welcome to Your Dashboard</h2>
             <p>Please select an option from the sidebar.</p>
-            <!-- Container for displaying self reports -->
+            <button onclick="loadReports()">Load Reports</button> <!-- Button to manually load reports for testing -->
             <div id="selfReportsContainer" style="display:none;">
                 <h3>Self Reports</h3>
                 <ul id="selfReportsList"></ul>
             </div>
-            <!-- Form for creating a new self report -->
             <div id="createReportForm" style="display:none;">
                 <h3>Create a New Self Report</h3>
                 <form id="newReportForm">
@@ -38,60 +37,85 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    const reportsContainer = document.getElementById('selfReportsContainer');
-    const createReportForm = document.getElementById('createReportForm');
-    const mainContent = document.querySelector('.content > p'); // main message "Please select an option from the sidebar."
-    const reportsList = document.getElementById('selfReportsList');
+    document.addEventListener('DOMContentLoaded', function () {
+        const reportsContainer = document.getElementById('selfReportsContainer');
+        const createReportForm = document.getElementById('createReportForm');
+        const mainContent = document.querySelector('.content > p'); // main message "Please select an option from the sidebar."
+        const reportsList = document.getElementById('selfReportsList');
 
-    document.getElementById('viewSelfReport').addEventListener('click', function (event) {
-        event.preventDefault();
-        hideAllSections();
-        mainContent.style.display = 'none'; // Hide the main welcome message
-        reportsList.innerHTML = ''; // Clear previous reports
+        document.getElementById('viewSelfReport').addEventListener('click', function(event) {
+            event.preventDefault();
+            hideAllSections();
+            mainContent.style.display = 'none'; // Hide the main welcome message
+            reportsList.innerHTML = ''; // Clear previous reports
 
-        fetch('/reports/self')
-            .then(response => response.json())
-            .then(data => {
-                if (data.reports && data.reports.length > 0) {
-                    data.reports.forEach(report => {
-                        const li = document.createElement('li');
-                        li.textContent = report.content;
-                        reportsList.appendChild(li);
-                    });
-                    reportsContainer.style.display = 'block'; // Show reports
-                } else {
-                    reportsList.innerHTML = '<li>No reports found.</li>';
-                    reportsContainer.style.display = 'block'; // Show reports section even if empty
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching reports:', error);
-                reportsList.innerHTML = '<li>Error loading reports.</li>';
-            });
-    });
+            fetch('/reports/self')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log data to see what is being received
+                    if (data.reports && data.reports.length > 0) {
+                        data.reports.forEach(report => {
+                            const li = document.createElement('li');
+                            li.textContent = report.content;
+                            reportsList.appendChild(li);
+                        });
+                    } else {
+                        reportsList.innerHTML = '<li>No reports found.</li>';
+                    }
+                    reportsContainer.style.display = 'block'; // Show reports container
+                })
+                .catch(error => {
+                    console.error('Error fetching reports:', error);
+                    reportsList.innerHTML = '<li>Error loading reports.</li>';
+                });
+        });
 
-    document.getElementById('createSelfReport').addEventListener('click', function (event) {
-        event.preventDefault();
-        hideAllSections();
-        createReportForm.style.display = 'block'; // Show the form to create reports
-    });
+        document.getElementById('createSelfReport').addEventListener('click', function(event) {
+            event.preventDefault();
+            hideAllSections();
+            createReportForm.style.display = 'block'; // Show the form to create reports
+        });
 
-    document.getElementById('logout').addEventListener('click', function (event) {
-        event.preventDefault();
-        fetch('/logout', { method: 'POST' })
-            .then(() => {
-                window.location.href = '/login';
-            })
-            .catch(error => console.error('Error logging out:', error));
-    });
+        document.getElementById('logout').addEventListener('click', function(event) {
+            event.preventDefault();
+            fetch('/logout', { method: 'POST' })
+                .then(() => {
+                    window.location.href = '/login';
+                })
+                .catch(error => console.error('Error logging out:', error));
+        });
 
-    function hideAllSections() {
-        reportsContainer.style.display = 'none'; // Hide self reports section
-        createReportForm.style.display = 'none'; // Hide create report form
-    }
+        function hideAllSections() {
+            reportsContainer.style.display = 'none'; // Hide self reports section
+            createReportForm.style.display = 'none'; // Hide create report form
+        }
+
+        // Adding this function globally for manual testing
+        window.loadReports = function () {
+            hideAllSections();
+            mainContent.style.display = 'none';
+            reportsList.innerHTML = '';
+            fetch('/reports/self')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log data to see what is being received
+                    if (data.reports && data.reports.length > 0) {
+                        data.reports.forEach(report => {
+                            const li = document.createElement('li');
+                            li.textContent = report.content;
+                            reportsList.appendChild(li);
+                        });
+                    } else {
+                        reportsList.innerHTML = '<li>No reports found.</li>';
+                    }
+                    reportsContainer.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching reports:', error);
+                    reportsList.innerHTML = '<li>Error loading reports.</li>';
+                });
+        }
     });
     </script>
 </body>
 </html>
-
