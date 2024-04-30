@@ -157,7 +157,9 @@ app.get('/seniorTutorDashboard', isAuth, (req, res) => {
   }
 });
 
-
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
 
 
 // Start the server
