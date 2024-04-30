@@ -58,6 +58,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
+// Login route
 app.post("/login", async (req, res) => {
   const { username, password, userType } = req.body;
 
@@ -73,21 +74,27 @@ app.post("/login", async (req, res) => {
       model = SeniorTutor;
       break;
     default:
-      return res.status(400).send("Invalid user type");  // Handling unexpected user types
+      console.error(`Login attempt with invalid user type: ${userType}`);
+      res.status(400).send("Invalid user type");
+      return;
   }
 
   try {
     const user = await model.findOne({ username: username.trim() });
     if (!user) {
-      return res.redirect('/login');  // User not found, redirect to login
+      console.error(`Login failed for non-existent username: ${username}`);
+      return res.redirect('/login'); // Consider using flash messages for user feedback
     }
-    const isMatch = await bcrypt.compare(password.trim(), user.passwordHash);
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
-      return res.redirect("/login");  // Password does not match, redirect to login
+      console.error(`Password mismatch for user: ${username}`);
+      return res.redirect("/login"); // Consider using flash messages for user feedback
     }
+
     req.session.isAuth = true;
     req.session.userId = user._id;
-    req.session.userType = userType;  // Store user type in session
+    req.session.userType = userType;
+    console.log(`User ${username} logged in as ${userType}`);
 
     // Redirect based on user type
     switch (userType) {
@@ -102,10 +109,11 @@ app.post("/login", async (req, res) => {
         break;
     }
   } catch (err) {
-    console.error(err);
+    console.error(`Error during login for ${username}: ${err.message}`, err);
     res.status(500).send("Login error");
   }
 });
+
 
 // User logout
 app.post('/logout', (req, res) => {
