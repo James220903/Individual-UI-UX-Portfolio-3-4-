@@ -45,29 +45,29 @@
 
         document.getElementById('viewSelfReport').addEventListener('click', function(event) {
             event.preventDefault();
-            hideAllSections();
-            mainContent.style.display = 'none'; // Hide the main welcome message
-            reportsList.innerHTML = ''; // Clear previous reports
+            const reportsContainer = document.getElementById('selfReportsContainer');
+            const reportsList = document.getElementById('selfReportsList');
+            reportsList.innerHTML = '';  // Clear previous content
 
             fetch('/reports/self')
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data); // Log data to see what is being received
-                    if (data.reports && data.reports.length > 0) {
-                        data.reports.forEach(report => {
-                            const li = document.createElement('li');
-                            li.textContent = report.content;
-                            reportsList.appendChild(li);
-                        });
-                    } else {
-                        reportsList.innerHTML = '<li>No reports found.</li>';
-                    }
-                    reportsContainer.style.display = 'block'; // Show reports container
-                })
-                .catch(error => {
-                    console.error('Error fetching reports:', error);
-                    reportsList.innerHTML = '<li>Error loading reports.</li>';
-                });
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched Data:", data); // Debugging to see fetched data
+                if (data.reports.length > 0) {
+                    data.reports.forEach(report => {
+                        const li = document.createElement('li');
+                        li.textContent = report.reportContent; // Make sure it's 'reportContent'
+                        reportsList.appendChild(li);
+                    });
+                } else {
+                    reportsList.innerHTML = '<li>No reports found.</li>';
+                }
+                reportsContainer.style.display = 'block'; // Ensure this is displayed
+            })
+            .catch(error => {
+                console.error('Error fetching reports:', error);
+                reportsList.innerHTML = '<li>Error loading reports.</li>';
+            });
         });
 
         document.getElementById('createSelfReport').addEventListener('click', function(event) {
